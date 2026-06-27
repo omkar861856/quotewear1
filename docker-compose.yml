@@ -19,12 +19,13 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     environment:
-      - DATABASE_URL=postgres://postgres:postgrespassword@postgres:5432/medusa-db
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://postgres:postgrespassword@postgres:5432/medusa-db?sslmode=disable
       - REDIS_URL=redis://redis:6379
       - HOST=0.0.0.0
       # You will need to update these in Zeabur once you generate the public domains
-      - STORE_CORS=https://your-storefront-domain.zeabur.app
-      - ADMIN_CORS=https://your-backend-domain.zeabur.app
+      - STORE_CORS=http://43.166.254.141:8000
+      - ADMIN_CORS=http://43.166.254.141:9000
       - JWT_SECRET=supersecret
       - COOKIE_SECRET=supersecret
     ports:
@@ -40,7 +41,7 @@ services:
       dockerfile: Dockerfile
     environment:
       # You will need to update this to the public URL of the backend
-      - NEXT_PUBLIC_MEDUSA_BACKEND_URL=https://your-backend-domain.zeabur.app
+      - NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://43.166.254.141:9000
       - NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_YOUR_KEY_HERE
       - PORT=8000
     ports:
