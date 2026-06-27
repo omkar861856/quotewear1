@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL Database
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: medusa-db
+
+  # 2. Redis Cache
+  redis:
+    image: redis:alpine
+
+  # 3. Medusa Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgres://postgres:postgrespassword@postgres:5432/medusa-db
+      - REDIS_URL=redis://redis:6379
+      - HOST=0.0.0.0
+      # You will need to update these in Zeabur once you generate the public domains
+      - STORE_CORS=https://your-storefront-domain.zeabur.app
+      - ADMIN_CORS=https://your-backend-domain.zeabur.app
+      - JWT_SECRET=supersecret
+      - COOKIE_SECRET=supersecret
+    ports:
+      - "9000:9000"
+    depends_on:
+      - postgres
+      - redis
+
+  # 4. Next.js Storefront
+  storefront:
+    build:
+      context: ./storefront
+      dockerfile: Dockerfile
+    environment:
+      # You will need to update this to the public URL of the backend
+      - NEXT_PUBLIC_MEDUSA_BACKEND_URL=https://your-backend-domain.zeabur.app
+      - NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_YOUR_KEY_HERE
+      - PORT=8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - backend
