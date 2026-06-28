@@ -21,6 +21,8 @@ services:
     environment:
       - NODE_ENV=production
       - HOST=0.0.0.0
+      - STOREFRONT_URL=${STOREFRONT_URL}
+      - REVALIDATE_SECRET=${REVALIDATE_SECRET}
     ports:
       - "9000:9000"
     depends_on:
