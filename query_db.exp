@@ -1,0 +1,13 @@
+#!/usr/bin/expect -f
+set timeout -1
+set IP "187.127.133.157"
+set USER "root"
+set PASS "2Z,LD79(rurJBrHH"
+spawn ssh -o StrictHostKeyChecking=no $USER@$IP "cd /root/medusa && docker compose exec -T postgres psql -U postgres -d medusa-db -t -c 'SELECT id, token, created_at FROM api_key ORDER BY created_at DESC;'"
+expect {
+    "password:" {
+        send "$PASS\r"
+        exp_continue
+    }
+    eof
+}

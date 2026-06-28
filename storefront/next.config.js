@@ -45,6 +45,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "admin.quotewear.store",
       },
+      {
+        protocol: "https",
+        hostname: "ik.imagekit.io",
+      },
     ],
   },
 }
