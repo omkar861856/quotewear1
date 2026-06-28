@@ -27,7 +27,7 @@ expect {
 }
 
 # Step 3: Run docker-compose
-spawn ssh -o StrictHostKeyChecking=no $USER@$IP "cd $REMOTE_DIR && sudo grep -q 'admin.quotewear.store' /etc/hosts || echo '127.0.0.1 admin.quotewear.store' | sudo tee -a /etc/hosts && sudo grep -q 'quotewear.store' /etc/hosts || echo '127.0.0.1 quotewear.store' | sudo tee -a /etc/hosts && sudo docker compose up -d backend proxy && sleep 20 && sudo docker compose build storefront && sudo docker compose up -d storefront"
+spawn ssh -o ServerAliveInterval=15 -o StrictHostKeyChecking=no $USER@$IP "cd $REMOTE_DIR && sudo grep -q 'admin.quotewear.store' /etc/hosts || echo '127.0.0.1 admin.quotewear.store' | sudo tee -a /etc/hosts && sudo grep -q 'quotewear.store' /etc/hosts || echo '127.0.0.1 quotewear.store' | sudo tee -a /etc/hosts && sudo docker compose up -d --build backend proxy && sleep 40 && sudo docker compose run --rm backend yarn seed && sudo docker compose build storefront && sudo docker compose up -d storefront"
 expect {
     "password:" {
         send "$PASS\r"

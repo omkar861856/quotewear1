@@ -7,8 +7,10 @@ RUN corepack enable && yarn install --frozen-lockfile
 
 COPY . .
 
+ENV NODE_ENV=production
 RUN yarn build
+RUN cp -r .medusa/server/public ./public
 
 EXPOSE 9000
 
-CMD ["yarn", "start"]
+CMD ["sh", "-c", "npx medusa db:migrate && yarn start"]
