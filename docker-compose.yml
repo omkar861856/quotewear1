@@ -4,10 +4,8 @@ services:
   # 1. PostgreSQL Database
   postgres:
     image: postgres:15
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgrespassword
-      POSTGRES_DB: medusa-db
+    env_file:
+      - .env
 
   # 2. Redis Cache
   redis:
@@ -18,16 +16,11 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    env_file:
+      - .env
     environment:
-      - NODE_ENV=development
-      - DATABASE_URL=postgres://postgres:postgrespassword@postgres:5432/medusa-db?sslmode=disable
-      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=production
       - HOST=0.0.0.0
-      # You will need to update these in Zeabur once you generate the public domains
-      - STORE_CORS=http://43.166.254.141:8000
-      - ADMIN_CORS=http://43.166.254.141:9000
-      - JWT_SECRET=supersecret
-      - COOKIE_SECRET=supersecret
     ports:
       - "9000:9000"
     depends_on:
@@ -39,13 +32,16 @@ services:
     build:
       context: ./storefront
       dockerfile: Dockerfile
+      network: host
+      extra_hosts:
+        - "admin.quotewear.store:127.0.0.1"
       args:
-        - NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://43.166.254.141:9000
-        - NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_fbb73c332f429bd57fd1beb9a5911fb18749d6083f4628e2e0b941eab32a41b5
+        - NEXT_PUBLIC_MEDUSA_BACKEND_URL=${NEXT_PUBLIC_MEDUSA_BACKEND_URL}
+        - NODE_TLS_REJECT_UNAUTHORIZED=${NODE_TLS_REJECT_UNAUTHORIZED}
+        - NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY}
+    env_file:
+      - .env
     environment:
-      # You will need to update this to the public URL of the backend
-      - NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://43.166.254.141:9000
-      - NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_fbb73c332f429bd57fd1beb9a5911fb18749d6083f4628e2e0b941eab32a41b5
       - PORT=8000
     ports:
       - "8000:8000"
